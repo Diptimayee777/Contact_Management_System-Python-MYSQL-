@@ -1,87 +1,75 @@
-# Contact Manager Program
+import mysql.connector as a
+con= a.connect(host="localhost",user="root",password='Diptimayeesql77',database="contact_management")
 
-# Initialize an empty dictionary to store contacts
-contacts = {}
-
-def add_contact():
-    name = input("Enter contact name: ")
-    phone = input("Enter contact phone number: ")
-    email = input("Enter contact email address: ")
-    contacts[name] = {"phone": phone, "email": email}
-    print(f"Contact {name} added successfully!")
-
-def view_contacts():
-    if not contacts:
-        print("No contacts in the list.")
-    else:
-        print("Contact List:")
-        for name, info in contacts.items():
-            print(f"Name: {name}, Phone: {info['phone']}, Email: {info['email']}")
-
-def edit_contact():
-    name = input("Enter the name of the contact to edit: ")
-    if name in contacts:
-        phone = input("Enter new phone number (or press enter to keep the same): ")
-        email = input("Enter new email address (or press enter to keep the same): ")
-        if phone:
-            contacts[name]["phone"] = phone
-        if email:
-            contacts[name]["email"] = email
-        print(f"Contact {name} updated successfully!")
-    else:
-        print("Contact not found.")
-
-def delete_contact():
-    name = input("Enter the name of the contact to delete: ")
-    if name in contacts:
-        del contacts[name]
-        print(f"Contact {name} deleted successfully!")
-    else:
-        print("Contact not found.")
-
-def save_contacts_to_file():
-    with open("contacts.txt", "w") as f:
-        for name, info in contacts.items():
-            f.write(f"{name},{info['phone']},{info['email']}\n")
-    print("Contacts saved to file successfully!")
-
-def load_contacts_from_file():
-    global contacts
-    try:
-        with open("contacts.txt", "r") as f:
-            for line in f:
-                name, phone, email = line.strip().split(",")
-                contacts[name] = {"phone": phone, "email": email}
-        print("Contacts loaded from file successfully!")
-    except FileNotFoundError:
-        print("No contacts file found.")
-
-def main():
-    load_contacts_from_file()
-    while True:
-        print("\nContact Manager Menu:")
-        print("1. Add Contact")
-        print("2. View Contacts")
-        print("3. Edit Contact")
-        print("4. Delete Contact")
-        print("5. Save Contacts to File")
-        print("6. Exit")
-        choice = input("Enter your choice: ")
-        if choice == "1":
-            add_contact()
-        elif choice == "2":
-            view_contacts()
-        elif choice == "3":
-            edit_contact()
-        elif choice == "4":
-            delete_contact()
-        elif choice == "5":
-            save_contacts_to_file()
-        elif choice == "6":
-            break
-        else:
-            print("Invalid choice. Please try again.")
-
-if __name__ == "__main__":
+def addcontact():
+    cn=input("Enter the name of the contact")
+    pn=input("Enter the phone number")
+    ei=input("Enter the E-Mail Id")
+    data=(cn,pn,ei)
+    sql='insert into contacts values(%s,%s,%s)'
+    c=con.cursor()
+    c.execute(sql,data)
+    con.commit
+    print(">...........................<")
+    print("Contact added Successfully")
+    main()
+def editcontact():
+    cn=input("Enter the contact name you want to edit: ")
+    r=input("Enter new contact name: ")
+    p=input("Enter new phone number: ")
+    s=input("Enter new email id: ")
+    a='update contacts set Name=%s, Phone_number=%s, EmailId=%s where Name=%s'
+    c=con.cursor()
+    c.execute(a, (r, p, s, cn))
+    con.commit()
+    print(">...........................<")
+    print("Contact successfully edited")
+    
+def deletecontact():
+    ac=input("Enter contact name you want to delete")
+    a="delete from contacts where Name=%s"
+    data=(ac,)
+    c=con.cursor()
+    c.execute(a,data)
+    con.commit()
+    print(" Contact Successfully Deleted")
     main()
     
+def displaycontact():
+    a="select * from contacts"
+    try:
+        c=con.cursor()
+        c.execute(a)
+        myresult=c.fetchall()
+        if myresult:
+            print("Contact List:")
+            print("----------------")
+            for i in myresult:
+                print("Name: ", i[0])
+                print("Number: ", i[1])
+                print("Email: ", i[2])  # Assuming email is the 3rd column
+                print(">.....................<")
+        else:
+            print("No contacts found.")
+    except mysql.connector.Error as err:
+        print("Error: {}".format(err))
+    finally:
+        main()
+def main():
+    print("Contact Manager, 1 for Add Contact,2 for Edit Contact, 3 for delete contact and 4 for display contact")
+    ch=int(input("Enter your choice"))
+    if(ch==1):
+        addcontact()
+    elif(ch==2):
+        editcontact()
+    elif(ch==3):
+        deletecontact()
+    elif(ch==4):
+        displaycontact()
+    else:
+        print("wrong choice")
+pw=input("enterpassword")
+if pw=='Diptimayeesql77':
+    main()
+else:
+    print("wrong password")
